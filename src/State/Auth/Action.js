@@ -10,6 +10,9 @@ import {
   REGISTER_FAILURE,
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
+  GET_ALL_USER_REQUEST,
+  GET_ALL_USER_SUCCESS,
+  GET_ALL_USER_FAILURE,
 } from "./ActionType";
 
 import { API_BASE_URL } from "../../config/api";
@@ -85,4 +88,30 @@ export const getUser = (jwt) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
   dispatch({ type: LOGOUT, payload: null });
   localStorage.clear();
+};
+
+const getAllUserRequest = () => ({ type: GET_ALL_USER_REQUEST });
+const getAllUserSuccess = (users) => ({
+  type: GET_ALL_USER_SUCCESS,
+  payload: users,
+});
+const getAllUserFailure = (error) => ({
+  type: GET_ALL_USER_FAILURE,
+  payload: error,
+});
+
+export const getAllUser = (jwt) => async (dispatch) => {
+  dispatch(getAllUserRequest());
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/user/`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+    const users = response.data;
+    dispatch(getAllUserSuccess(users));
+    console.log("All Users: ", users);
+  } catch (error) {
+    dispatch(getAllUserFailure(error.message));
+  }
 };

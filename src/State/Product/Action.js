@@ -5,6 +5,12 @@ import {
   FIND_PRODUCT_BY_ID_REQUEST,
   FIND_PRODUCT_BY_ID_SUCCESS,
   FIND_PRODUCT_BY_ID_FAILURE,
+  CREATE_PRODUCT_REQUEST,
+  CREATE_PRODUCT_SUCCESS,
+  CREATE_PRODUCT_FAILURE,
+  DELETE_PRODUCT_REQUEST,
+  DELETE_PRODUCT_SUCCESS,
+  DELETE_PRODUCT_FAILURE,
 } from "./ActionType";
 import { api } from "../../config/api";
 
@@ -61,7 +67,7 @@ export const findProducts =
 
 export const findProductById = (reqData) => async (dispatch) => {
   dispatch({ type: FIND_PRODUCT_BY_ID_REQUEST });
-  const {productId}=reqData
+  const { productId } = reqData;
   try {
     const { data } = await api.get(`/api/products/id/${productId}`);
     console.log("✅ Product detail", data.data);
@@ -70,6 +76,58 @@ export const findProductById = (reqData) => async (dispatch) => {
     dispatch({
       type: FIND_PRODUCT_BY_ID_FAILURE,
       payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+// ✅ Fixed createProduct Action
+export const createProduct = (product) => async (dispatch) => {
+  try {
+    dispatch({ type: CREATE_PRODUCT_REQUEST });
+
+    // remove .data, send the product object directly
+    const { data } = await api.post(
+      `/api/admin/products/`,
+      product.data
+    );
+
+    dispatch({
+      type: CREATE_PRODUCT_SUCCESS,
+      payload: data,
+    });
+
+    console.log("✅ Product created successfully:", data);
+  } catch (error) {
+    dispatch({
+      type: CREATE_PRODUCT_FAILURE,
+      payload:
+        error.response?.data?.message || error.message,
+    });
+  }
+};
+
+export const deleteProduct = (productId) => async (dispatch) => {
+  console.log("delete product action", productId);
+  try {
+    dispatch({ type: DELETE_PRODUCT_REQUEST });
+
+    const { data } = await api.delete(`/api/admin/products/${productId}`);
+
+    console.log("delete product ", data);
+
+    dispatch({
+      type: DELETE_PRODUCT_SUCCESS,
+      payload: productId,
+    });
+
+    console.log("product delete ", data);
+  } catch (error) {
+    console.log("catch error ", error);
+    dispatch({
+      type: DELETE_PRODUCT_FAILURE,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
     });
   }
 };

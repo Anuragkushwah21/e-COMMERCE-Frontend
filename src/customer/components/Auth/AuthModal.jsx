@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { Alert, Snackbar } from "@mui/material";
 import Login from "./Login";
 import Register from "./Register";
+import { useSelector } from "react-redux";
 
 const style = {
   position: "absolute",
@@ -22,16 +23,16 @@ const style = {
 
 export default function AuthModal({ handleClose, open }) {
   const location = useLocation();
-//   const { auth } = useSelector((store) => store);
-//   const navigate=useNavigate()
-//   useEffect(() => {
-//     if (auth.user){
-//        handleClose();
-//        if(auth.user?.role==="ADMIN"){
-//         navigate('/admin')
-//        }
-//       }
-//   }, [auth.user]);
+  const { auth } = useSelector((store) => store);
+  const navigate=useNavigate()
+  useEffect(() => {
+    if (auth.user){
+       handleClose();
+       if(auth.user?.role==="ADMIN"){
+        navigate('/admin')
+       }
+      }
+  }, [auth.user]);
   return (
     <>
     <Modal
